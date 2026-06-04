@@ -1,6 +1,6 @@
-# Mouno Crypto Website
+# BGC Crypto Website
 
-A modern, attractive, and user-friendly website for Mouno Crypto services, built with React, Tailwind CSS, and Python (Flask).
+A modern, attractive, and user-friendly website for BGC Crypto services, built with React, Tailwind CSS, and Python (Flask).
 
 ## Features
 

@@ -53,7 +53,7 @@ const App: React.FC = () => {
           <div className="max-w-7xl mx-auto flex justify-between items-center">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-secondary font-bold text-xl">M</div>
-              <span className="text-xl font-bold tracking-tight hidden sm:inline">Mouno Private</span>
+              <span className="text-xl font-bold tracking-tight hidden sm:inline">BGC Private</span>
             </Link>
 
             <div className="flex items-center gap-4">
