@@ -12,7 +12,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchMarket = async () => {
       try {
-        const res = await axios.get('http://localhost:5001/api/market');
+        const res = await axios.get('/api/market');
         setMarketData(res.data);
       } catch (err) {
         console.error(err);

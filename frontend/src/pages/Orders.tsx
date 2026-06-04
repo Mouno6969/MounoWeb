@@ -11,7 +11,7 @@ const Orders: React.FC = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await axios.get('http://localhost:5001/api/orders');
+        const res = await axios.get('/api/orders');
         setOrderData(res.data);
       } catch (err) {
         console.error(err);

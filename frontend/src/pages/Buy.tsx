@@ -25,7 +25,7 @@ const Buy: React.FC = () => {
   useEffect(() => {
     const fetchMarket = async () => {
       try {
-        const res = await axios.get('http://localhost:5001/api/market');
+        const res = await axios.get('/api/market');
         setMarketData(res.data);
       } catch (err) {
         console.error(err);
@@ -52,7 +52,7 @@ const Buy: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5001/api/buy', {
+      const res = await axios.post('/api/buy', {
         amount_bdt: bdtAmount,
         network: selectedNetwork,
         wallet,

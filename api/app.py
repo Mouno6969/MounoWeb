@@ -10,9 +10,9 @@ import sys
 import db
 import config
 from balance import get_all_balances
-from swap_service import get_lifi_quote
+from swap_service import quote_lifi, summarize_quote
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)
 CORS(app)
 app.config['SECRET_KEY'] = os.getenv("WEB_SECRET_KEY", "mouno_web_secret_123")
 
@@ -78,7 +78,6 @@ def get_market():
         rate = db.get_network_rate(net) or config.RATE
         rates[net] = rate
     
-    # Simple stock status (active reservations vs total would be better, but for now we show general)
     return jsonify({
         'rates': rates,
         'bKash': config.BKASH_NUMBER,
@@ -88,10 +87,6 @@ def get_market():
 @app.route('/api/me', methods=['GET'])
 @token_required
 def get_me(current_user):
-    # current_user: id, username, password_hash, telegram_id, created_at
-    user_id = current_user[3] if current_user[3] else f"web_{current_user[0]}"
-    
-    # If linked to telegram, get telegram stats
     telegram_stats = None
     if current_user[3]:
         telegram_stats = db.get_user_analytics(current_user[3])
@@ -107,15 +102,12 @@ def get_me(current_user):
 @token_required
 def get_user_orders(current_user):
     user_id = current_user[3] if current_user[3] else f"web_{current_user[0]}"
-    # This is a bit tricky as db.py doesn't have a dedicated get_orders_by_user_id
-    # We might need to add one or use a raw query
     with db.closing(db.connect()) as con:
         orders = con.execute(
             "SELECT trx_id, order_id, amount_bdt, amount_usdc, network, wallet, status, created_at FROM transactions WHERE user_id=? ORDER BY created_at DESC",
             (str(user_id),)
         ).fetchall()
         
-        # Also check pending
         pending = con.execute(
             "SELECT trx_id, order_id, amount_bdt, amount_usdc, network, wallet, created_at FROM pending_orders WHERE user_id=? ORDER BY created_at DESC",
             (str(user_id),)
@@ -130,7 +122,6 @@ def get_user_orders(current_user):
 @token_required
 def buy_crypto(current_user):
     data = request.get_json()
-    # data: amount_bdt, network, wallet, trx_id
     user_id = current_user[3] if current_user[3] else f"web_{current_user[0]}"
     
     amount_bdt = float(data.get('amount_bdt'))
@@ -141,7 +132,6 @@ def buy_crypto(current_user):
     rate = db.get_network_rate(network) or config.RATE
     amount_usdc = round(amount_bdt / rate, 2)
     
-    # Save as pending order, bot will pick it up or admin will approve
     order_id = db.save_pending_order(trx_id, user_id, amount_bdt, amount_usdc, wallet, network)
     
     return jsonify({
@@ -156,14 +146,21 @@ def swap_quote():
     toChain = request.args.get('toChain')
     fromToken = request.args.get('fromToken')
     toToken = request.args.get('toToken')
-    amount = request.args.get('amount') # in base units or decimal? LI.FI usually expects decimal or base
+    amount = request.args.get('amount')
     fromAddress = request.args.get('fromAddress')
     
-    # This calls swap_service.py's LI.FI integration
-    # Note: get_lifi_quote might need to be adjusted for web use
     try:
-        quote = get_lifi_quote(fromChain, toChain, fromToken, toToken, amount, fromAddress)
-        return jsonify(quote)
+        intent = {
+            "from_chain_id": fromChain,
+            "to_chain_id": toChain,
+            "from_token": fromToken,
+            "to_token": toToken,
+            "amount": amount,
+            "wallet": fromAddress
+        }
+        quote = quote_lifi(intent, api_key=config.LIFI_API_KEY)
+        summary = summarize_quote(quote)
+        return jsonify({**quote, "summary": summary})
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 

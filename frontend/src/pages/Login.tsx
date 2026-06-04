@@ -19,7 +19,7 @@ const Login: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('http://localhost:5001/api/login', { username, password });
+      const res = await axios.post('/api/login', { username, password });
       login(res.data.username, res.data.token, res.data.telegram_id);
       navigate('/');
     } catch (err: any) {

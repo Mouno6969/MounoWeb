@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (token) {
         try {
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          const res = await axios.get('http://localhost:5001/api/me');
+          const res = await axios.get('/api/me');
           setUser(res.data);
         } catch (err) {
           console.error('Auth error', err);
