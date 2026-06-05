@@ -5,7 +5,7 @@ import string
 from contextlib import closing
 from datetime import datetime, timedelta
 
-DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../mouno.db"))
+DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../mouno.db"))
 
 
 def connect():

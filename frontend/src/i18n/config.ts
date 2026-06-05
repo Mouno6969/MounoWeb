@@ -5,7 +5,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 const resources = {
   en: {
     translation: {
-      "welcome": "Welcome to MounoWeb",
+      "welcome": "Welcome to BGC Crypto",
       "buy": "Buy Crypto",
       "swap": "Swap & Bridge",
       "wallet": "Personal Wallet",
@@ -35,7 +35,7 @@ const resources = {
       "total_spent": "Total Spent",
       "order_count": "Total Orders",
       "copy_success": "Copied to clipboard!",
-      "footer_text": "© 2026 Mouno. All rights reserved.",
+      "footer_text": "© 2026 BGC Crypto. All rights reserved.",
       "send_bdt": "Send BDT to:",
       "after_payment": "After payment, submit the TrxID below.",
     }
@@ -72,7 +72,7 @@ const resources = {
       "total_spent": "মোট খরচ",
       "order_count": "মোট অর্ডার",
       "copy_success": "কপি হয়েছে!",
-      "footer_text": "© ২০২৪ বিজিসি প্রাইভেট। সর্বস্বত্ব সংরক্ষিত।",
+      "footer_text": "© ২০২৬ BGC Crypto। সর্বস্বত্ব সংরক্ষিত।",
       "send_bdt": "টাকা পাঠান এই নম্বরে:",
       "after_payment": "পেমেন্ট করার পর নিচের বক্সে TrxID দিন।",
     }

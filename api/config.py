@@ -45,6 +45,7 @@ LIFI_API_KEY = os.getenv("LIFI_API_KEY")
 RELAY_API_KEY = os.getenv("RELAY_API_KEY")
 SOCKET_API_KEY = os.getenv("SOCKET_API_KEY")
 SOLANA_KEY = os.getenv("SOLANA_KEY")
+WEB_SECRET_KEY = os.getenv("WEB_SECRET_KEY", "bgc_web_secret_2025")
 RATE = float(os.getenv("RATE", "137"))
 STAR_RATE = float(os.getenv("STAR_RATE", "100"))
 
