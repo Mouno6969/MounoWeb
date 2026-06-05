@@ -14,7 +14,7 @@ from swap_service import quote_lifi, summarize_quote
 
 app = Flask(__name__, static_folder=None)
 CORS(app)
-_SECRET = os.getenv("WEB_SECRET_KEY")
+_SECRET = os.getenv("WEB_SECRET_KEY") or config.WEB_SECRET_KEY
 if not _SECRET:
     raise RuntimeError("WEB_SECRET_KEY must be set in the environment")
 app.config['SECRET_KEY'] = _SECRET

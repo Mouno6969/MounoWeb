@@ -1170,7 +1170,7 @@ def _ask_openrouter(question, lang="bn", timeout=AI_PROVIDER_TIMEOUT_SECONDS):
         OPENROUTER_MODEL,
         question,
         lang,
-        {"HTTP-Referer": "https://t.me/", "X-Title": "Mouno Private Telegram Bot"},
+        {"HTTP-Referer": "https://t.me/", "X-Title": "BGC Crypto Telegram Bot"},
         timeout=timeout,
     )
 
@@ -2990,7 +2990,7 @@ def receipt_qr_payload(data):
     if tx:
         parts.append(f"tx={short_wallet(tx)}")
     parts.append(f"time={receipt_value(data.get('timestamp'))}")
-    return "Mouno receipt|" + "|".join(parts), "Encoded receipt details"
+    return "BGC receipt|" + "|".join(parts), "Encoded receipt details"
 
 
 def build_receipt_qr(data, size=190):
@@ -6397,7 +6397,7 @@ async def waiting_amount(update: Update, context: ContextTypes.DEFAULT_TYPE):
     crypto_amount = round(amount_bdt / rate, 6)
     sufficient, current_bal = check_sufficient(network, crypto_amount)
     if not sufficient and current_bal is not None:
-        await update.message.reply_text(f"😔 দুঃখিত! এই মুহূর্তে অর্ডার পূরণ সম্ভব নয়।\n\n🌐 {net_info['name']}\n💵 আপনি চাইছেন: {crypto_amount} {net_info['symbol']}\n{stock_detail(network, crypto_amount, current_bal)}\n\nঅনুগ্রহ করে কম পরিমাণে অর্ডার করুন।\n❓ @MdMouno")
+        await update.message.reply_text(f"😔 দুঃখিত! এই মুহূর্তে অর্ডার পূরণ সম্ভব নয়।\n\n🌐 {net_info['name']}\n💵 আপনি চাইছেন: {crypto_amount} {net_info['symbol']}\n{stock_detail(network, crypto_amount, current_bal)}\n\nঅনুগ্রহ করে কম পরিমাণে অর্ডার করুন।\n❓ @MdBGC")
         return ConversationHandler.END
     context.user_data["amount_bdt"] = amount_bdt
     context.user_data["usdc_amount"] = crypto_amount

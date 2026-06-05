@@ -424,9 +424,9 @@ def dashboard():
         return f"<table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>"
 
     html = f"""
-    <!doctype html><html><head><meta charset='utf-8'><title>Mouno Admin</title>
+    <!doctype html><html><head><meta charset='utf-8'><title>BGC Admin</title>
     <style>body{{font-family:system-ui;margin:24px;background:#0f172a;color:#e2e8f0}}table{{border-collapse:collapse;width:100%;margin:12px 0 28px}}td,th{{border:1px solid #334155;padding:8px;text-align:left}}th{{background:#1e293b}}.card{{background:#111827;padding:16px;border-radius:12px;margin-bottom:16px}}code{{color:#93c5fd}}</style></head><body>
-    <h1>Mouno Admin Dashboard</h1>
+    <h1>BGC Admin Dashboard</h1>
     <div class='card'><h2>Webhook</h2><p>Last notice: <code>{escape(str(health.get('last_notice_at')))}</code> Source: <code>{escape(str(health.get('source')))}</code> TrxID: <code>{escape(str(health.get('trx_id')))}</code></p></div>
     <div class='card'><h2>Balances</h2><pre>{escape(str(balances))}</pre></div>
     <div class='card'><h2>Gas</h2><pre>{escape(str(gas_balances))}</pre></div>
