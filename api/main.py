@@ -1,4 +1,9 @@
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from the root .env file before any other imports that might depend on them
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+
 from flask import send_from_directory
 from app import app as api_app
 
