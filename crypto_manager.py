@@ -301,15 +301,18 @@ def _send_evm_token(private_key, network, dest_wallet, amount):
     admin = account.address
     contract = w3.eth.contract(address=Web3.to_checksum_address(contract_info["address"]), abi=ERC20_ABI)
     amount_raw = int(amount * 10 ** contract_info["decimals"])
-    txn = contract.functions.transfer(Web3.to_checksum_address(dest_wallet), amount_raw).build_transaction(
-        {
-            "from": admin,
-            "nonce": w3.eth.get_transaction_count(admin),
-            "gasPrice": w3.eth.gas_price,
-            "gas": 100000,
-            "chainId": chain_ids.get(network, 1),
-        }
-    )
+    tx_params = {
+        "from": admin,
+        "nonce": w3.eth.get_transaction_count(admin),
+        "gasPrice": w3.eth.gas_price,
+        "chainId": chain_ids.get(network, 1),
+    }
+    fn = contract.functions.transfer(Web3.to_checksum_address(dest_wallet), amount_raw)
+    try:
+        tx_params["gas"] = int(fn.estimate_gas({"from": admin}) * 1.2)
+    except Exception:
+        tx_params["gas"] = 100000
+    txn = fn.build_transaction(tx_params)
     signed = w3.eth.account.sign_transaction(txn, private_key)
     tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
     receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)

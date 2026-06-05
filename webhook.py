@@ -40,9 +40,10 @@ def _clean_bearer(value):
 def _forwarder_token_ok(data):
     route_token = request.view_args.get("token") if request.view_args else None
     if route_token:
-        return True
+        return _seller_token_ok(route_token)
     if not FORWARDER_SECRET:
-        return True
+        logger.error("FORWARDER_SECRET is not configured; rejecting forwarder notice")
+        return False
     return _supplied_forwarder_token() == FORWARDER_SECRET
 
 
