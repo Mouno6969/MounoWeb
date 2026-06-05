@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { ShoppingCart, Smartphone, CheckCircle, Info } from 'lucide-react';
+import { ShoppingCart, Smartphone, CheckCircle, Info, TrendingUp, ArrowRight, ShieldCheck, CreditCard } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Badge } from '../components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 
 const Buy: React.FC = () => {
   const { t } = useTranslation();
   const [networks] = useState([
-    { id: 'solana', name: 'Solana (USDC)', icon: '🪐' },
-    { id: 'trc20', name: 'Tron (USDT)', icon: '🔋' },
-    { id: 'polygon', name: 'Polygon (USDC)', icon: '🟣' },
-    { id: 'bsc', name: 'BSC (USDT)', icon: '🟡' },
-    { id: 'ton', name: 'TON (USDT)', icon: '💎' },
+    { id: 'solana', name: 'Solana', asset: 'USDC', icon: '🪐' },
+    { id: 'trc20', name: 'Tron', asset: 'USDT', icon: '🔋' },
+    { id: 'polygon', name: 'Polygon', asset: 'USDC', icon: '🟣' },
+    { id: 'bsc', name: 'BSC', asset: 'USDT', icon: '🟡' },
+    { id: 'ton', name: 'TON', asset: 'USDT', icon: '💎' },
   ]);
 
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
@@ -73,162 +79,220 @@ const Buy: React.FC = () => {
 
   if (success) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-20">
-        <div className="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-          <CheckCircle size={48} />
+      <div className="max-w-2xl mx-auto text-center py-20 animate-in zoom-in duration-300">
+        <div className="w-24 h-24 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8">
+          <CheckCircle className="h-12 w-12" />
         </div>
-        <h2 className="text-3xl font-bold mb-4">Order Submitted Successfully!</h2>
-        <p className="text-gray-400 mb-8 text-lg">Your Order ID is: <span className="text-primary font-mono font-bold">{success}</span>. It will be processed automatically within a few minutes.</p>
-        <button onClick={() => setSuccess(null)} className="btn-primary">Buy More</button>
+        <h2 className="text-4xl font-extrabold mb-4 tracking-tight">Order Received!</h2>
+        <Card className="mb-8 border-green-500/30 bg-green-500/5">
+          <CardContent className="py-6">
+            <p className="text-muted-foreground mb-2 text-sm uppercase font-bold tracking-widest">Your Order ID</p>
+            <p className="text-4xl font-mono font-black text-primary">{success}</p>
+          </CardContent>
+        </Card>
+        <p className="text-muted-foreground mb-8 text-lg">
+          Your order is being processed automatically. You can track the status in the <Link to="/orders" className="text-primary underline">Orders</Link> section.
+        </p>
+        <Button size="lg" onClick={() => setSuccess(null)} className="rounded-full px-10">
+          Place Another Order
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-          <ShoppingCart className="text-primary" /> {t('buy')}
-        </h1>
-        <p className="text-gray-400">Step-by-step crypto purchase via bKash.</p>
+    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
+      <section className="space-y-1">
+        <div className="flex items-center gap-3">
+           <div className="p-2 bg-primary/10 rounded-lg">
+              <ShoppingCart className="h-6 w-6 text-primary" />
+           </div>
+           <h1 className="text-3xl font-extrabold tracking-tight">{t('buy')} Crypto</h1>
+        </div>
+        <p className="text-muted-foreground">Follow these simple steps to purchase stablecoins with bKash.</p>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 space-y-6">
-          <form onSubmit={handleSubmit} className="card space-y-6">
-            {/* Network Selection */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-400">{t('network')}</label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {networks.map((net) => (
-                  <button
-                    key={net.id}
-                    type="button"
-                    onClick={() => handleNetworkChange(net.id)}
-                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${
-                      selectedNetwork === net.id 
-                      ? 'border-primary bg-primary/10 text-primary' 
-                      : 'border-gray-700 bg-secondary hover:border-gray-500'
-                    }`}
-                  >
-                    <span className="text-2xl">{net.icon}</span>
-                    <span className="text-xs font-bold uppercase">{net.id}</span>
-                  </button>
-                ))}
+          <Card className="shadow-xl border-primary/10 overflow-hidden">
+            <CardHeader className="bg-muted/30">
+               <CardTitle className="text-lg">Order Details</CardTitle>
+               <CardDescription>Select network and specify amounts</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-8">
+              {/* Network Selection */}
+              <div className="space-y-4">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground">{t('network')}</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  {networks.map((net) => (
+                    <button
+                      key={net.id}
+                      type="button"
+                      onClick={() => handleNetworkChange(net.id)}
+                      className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all relative group ${
+                        selectedNetwork === net.id
+                        ? 'border-primary bg-primary/10 text-primary ring-1 ring-primary'
+                        : 'border-muted bg-card hover:border-primary/50'
+                      }`}
+                    >
+                      <span className="text-2xl">{net.icon}</span>
+                      <span className="text-[10px] font-black uppercase tracking-tighter">{net.name}</span>
+                      {selectedNetwork === net.id && (
+                        <div className="absolute -top-1 -right-1 bg-primary text-primary-foreground rounded-full p-0.5">
+                           <CheckCircle className="h-3 w-3" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Amounts */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400">{t('bdt_amount')}</label>
+              {/* Amounts */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <Label htmlFor="bdt" className="text-xs uppercase tracking-wider text-muted-foreground">{t('bdt_amount')}</Label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold font-mono">৳</span>
+                    <Input
+                      id="bdt"
+                      type="number"
+                      className="pl-10 h-14 text-xl font-bold font-mono bg-muted/20"
+                      placeholder="Min 500"
+                      value={bdtAmount}
+                      onChange={(e) => handleBdtChange(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground italic">Approx. rate: ৳{marketData?.rates?.[selectedNetwork] || '...'}</p>
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">{t('crypto_amount')} (Receive)</Label>
+                  <div className="h-14 flex items-center justify-between px-4 rounded-md border bg-primary/5 border-primary/20">
+                    <span className="text-2xl font-black font-mono text-primary">{cryptoAmount}</span>
+                    <Badge variant="outline" className="font-mono bg-primary/10 border-primary/30">
+                      {networks.find(n => n.id === selectedNetwork)?.asset}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Wallet Address */}
+              <div className="space-y-3">
+                <Label htmlFor="wallet" className="text-xs uppercase tracking-wider text-muted-foreground">{t('wallet_address')}</Label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">৳</span>
-                  <input
-                    type="number"
-                    className="input-field pl-10"
-                    placeholder="Min 500"
-                    value={bdtAmount}
-                    onChange={(e) => handleBdtChange(e.target.value)}
+                   <ShieldCheck className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                   <Input
+                    id="wallet"
+                    className="pl-10 h-12 font-mono"
+                    placeholder="Enter your receive address"
+                    value={wallet}
+                    onChange={(e) => setWallet(e.target.value)}
                     required
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400">{t('crypto_amount')}</label>
-                <div className="bg-secondary border border-gray-700 rounded-lg p-3 text-xl font-bold flex justify-between items-center h-[50px]">
-                  <span>{cryptoAmount}</span>
-                  <span className="text-sm text-primary uppercase">{selectedNetwork === 'trc20' || selectedNetwork === 'bsc' || selectedNetwork === 'ton' ? 'USDT' : 'USDC'}</span>
-                </div>
+
+              <Alert className="bg-amber-500/5 border-amber-500/20 text-amber-200">
+                <Info className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  Double-check your wallet address. Crypto transactions are irreversible.
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-6 pt-4 border-t">
+                 <div className="flex flex-col items-center gap-4 bg-muted/50 p-6 rounded-2xl border border-dashed">
+                    <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground">
+                       <Smartphone className="h-4 w-4" /> {t('send_bdt')} to this bKash Number
+                    </div>
+                    <div className="text-3xl font-black font-mono tracking-widest text-primary flex items-center gap-3">
+                       {marketData?.bKash || '01XXXXXXXXX'}
+                       <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => navigator.clipboard.writeText(marketData?.bKash)}>
+                          <CreditCard className="h-4 w-4" />
+                       </Button>
+                    </div>
+                    <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">Personal (Send Money / Cash In)</Badge>
+                 </div>
+
+                 <div className="space-y-3">
+                    <Label htmlFor="trxid" className="text-xs uppercase tracking-wider text-muted-foreground">{t('trx_id')}</Label>
+                    <Input
+                      id="trxid"
+                      className="h-12 font-mono uppercase"
+                      placeholder="e.g. BMA1234567"
+                      value={trxId}
+                      onChange={(e) => setTrxId(e.target.value)}
+                      required
+                    />
+                 </div>
               </div>
-            </div>
-
-            {/* Wallet Address */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">{t('wallet_address')}</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder="Enter your wallet address"
-                value={wallet}
-                onChange={(e) => setWallet(e.target.value)}
-                required
-              />
-            </div>
-
-            {/* bKash Payment Info */}
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 space-y-3">
-               <div className="flex items-center gap-2 text-primary font-bold">
-                 <Smartphone size={20} />
-                 <span>{t('send_bdt')}</span>
-               </div>
-               <div className="text-2xl font-mono font-bold tracking-widest bg-black/30 p-3 rounded-lg text-center">
-                 {marketData?.bKash || '01XXXXXXXXX'}
-               </div>
-               <p className="text-sm text-gray-400 text-center italic">{t('after_payment')}</p>
-            </div>
-
-            {/* TrxID */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">{t('trx_id')}</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder="e.g. BMA1234567"
-                value={trxId}
-                onChange={(e) => setTrxId(e.target.value)}
-                required
-              />
-            </div>
-
-            <button type="submit" disabled={loading} className="btn-primary w-full text-lg">
-              {loading ? 'Processing...' : t('submit_order')}
-            </button>
-          </form>
+            </CardContent>
+            <CardFooter className="bg-muted/20 p-6">
+              <Button type="submit" disabled={loading} onClick={handleSubmit} className="w-full h-14 text-lg font-bold rounded-xl shadow-lg shadow-primary/20">
+                {loading ? (
+                   <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Processing Order...
+                   </>
+                ) : (
+                  <>
+                    Complete Purchase <ArrowRight className="ml-2 h-5 w-5" />
+                  </>
+                )}
+              </Button>
+            </CardFooter>
+          </Card>
         </div>
 
-        {/* Info Sidebar */}
+        {/* Sidebar */}
         <div className="space-y-6">
-          <div className="card border-blue-500/30">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Info className="text-blue-400" size={20} /> Instructions
-            </h3>
-            <ul className="space-y-4 text-sm text-gray-300">
-              <li className="flex gap-3">
-                <span className="bg-blue-500/20 text-blue-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0">1</span>
-                <span>Select your preferred network and enter the BDT amount.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="bg-blue-500/20 text-blue-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0">2</span>
-                <span>Send the exact BDT amount via bKash (Send Money or Cash In) to the provided number.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="bg-blue-500/20 text-blue-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0">3</span>
-                <span>Copy the Transaction ID (TrxID) from bKash confirmation SMS/App.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="bg-blue-500/20 text-blue-400 w-6 h-6 rounded-full flex items-center justify-center shrink-0">4</span>
-                <span>Paste the TrxID and your Wallet Address here, then Submit.</span>
-              </li>
-            </ul>
-          </div>
+           <Card className="border-primary/10">
+              <CardHeader>
+                 <CardTitle className="text-sm font-bold flex items-center gap-2">
+                    <Info className="h-4 w-4 text-primary" /> {t('how_to_buy')}
+                 </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                 {[
+                   { step: 1, text: "Select your network and enter the amount you want to pay." },
+                   { step: 2, text: "Send the money via bKash to the provided number." },
+                   { step: 3, text: "Copy the TrxID from the bKash confirmation message." },
+                   { step: 4, text: "Enter TrxID and your wallet address, then submit." }
+                 ].map((i) => (
+                   <div key={i.step} className="flex gap-3 items-start">
+                      <div className="h-5 w-5 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                         {i.step}
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{i.text}</p>
+                   </div>
+                 ))}
+              </CardContent>
+           </Card>
 
-          <div className="card">
-             <h3 className="text-sm font-medium text-gray-400 mb-2 uppercase">Market Rate</h3>
-             <p className="text-3xl font-bold">৳{marketData?.rates?.[selectedNetwork] || '...'}</p>
-             <p className="text-xs text-green-500 mt-2 flex items-center gap-1">
-               <TrendingUp size={12} /> Best rate guaranteed
-             </p>
-          </div>
+           <Card className="bg-primary/5 border-primary/20">
+              <CardHeader className="pb-2">
+                 <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Live Exchange Rate</CardDescription>
+                 <CardTitle className="text-2xl font-black text-primary">৳{marketData?.rates?.[selectedNetwork] || '...'}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                 <div className="flex items-center gap-1 text-[10px] text-green-500 font-bold uppercase">
+                    <TrendingUp className="h-3 w-3" /> Best rate in Bangladesh
+                 </div>
+              </CardContent>
+           </Card>
         </div>
       </div>
     </div>
   );
 };
 
-// Mock TrendingUp since I used it but didn't import it correctly above
-const TrendingUp = ({ size }: { size: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+// Help helper
+const Loader2 = ({ className }: { className?: string }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+);
+
+const Link = ({ to, children, className }: any) => (
+  <a href={to} className={className}>{children}</a>
 );
 
 export default Buy;

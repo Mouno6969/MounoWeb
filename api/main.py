@@ -10,10 +10,10 @@ frontend_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", 
 def serve(path):
     if path != "" and os.path.exists(os.path.join(frontend_folder, path)):
         return send_from_directory(frontend_folder, path)
-    
+
     if "." not in path:
         return send_from_directory(frontend_folder, 'index.html')
-    
+
     return f"Not Found: {path}", 404
 
 if __name__ == '__main__':

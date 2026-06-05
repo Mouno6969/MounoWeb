@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { TrendingUp, Battery, Wallet, Zap } from 'lucide-react';
+import { TrendingUp, Battery, Wallet, Zap, ArrowRight, ShieldCheck, Globe, ShoppingCart, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Link } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -22,107 +27,167 @@ const Dashboard: React.FC = () => {
   }, []);
 
   const networks = [
-    { id: 'solana', name: 'Solana (SOL)', icon: '🪐' },
-    { id: 'trc20', name: 'Tron (TRC20)', icon: '🔋' },
-    { id: 'polygon', name: 'Polygon (MATIC)', icon: '🟣' },
-    { id: 'bsc', name: 'BSC (BNB)', icon: '🟡' },
-    { id: 'ton', name: 'TON', icon: '💎' },
+    { id: 'solana', name: 'Solana (SOL)', icon: '🪐', color: 'text-purple-400' },
+    { id: 'trc20', name: 'Tron (TRC20)', icon: '🔋', color: 'text-red-400' },
+    { id: 'polygon', name: 'Polygon (MATIC)', icon: '🟣', color: 'text-indigo-400' },
+    { id: 'bsc', name: 'BSC (BNB)', icon: '🟡', color: 'text-yellow-400' },
+    { id: 'ton', name: 'TON', icon: '💎', color: 'text-blue-400' },
   ];
 
   return (
-    <div className="space-y-8 max-w-5xl">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">{t('welcome')}, {user ? user.username : 'Guest'}!</h1>
-        <p className="text-gray-400">Manage your crypto assets across all major networks.</p>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <section className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-extrabold tracking-tight lg:text-4xl">
+            {t('welcome')}, <span className="text-primary">{user ? user.username : 'Guest'}</span>!
+          </h1>
+          <p className="text-muted-foreground">Manage your crypto assets across all major networks.</p>
+        </div>
+        <div className="flex gap-2">
+           <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 px-3 py-1">
+             <Globe className="mr-1 h-3 w-3" /> System: Online
+           </Badge>
+        </div>
       </section>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="card flex items-center gap-4">
-          <div className="p-3 bg-blue-500/20 text-blue-400 rounded-lg">
-            <TrendingUp size={24} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-400">{t('rates')}</p>
-            <p className="text-xl font-bold">৳{marketData?.rates?.solana || '...'}</p>
-          </div>
-        </div>
-        <div className="card flex items-center gap-4">
-          <div className="p-3 bg-green-500/20 text-green-400 rounded-lg">
-            <Zap size={24} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-400">Status</p>
-            <p className="text-xl font-bold">Online</p>
-          </div>
-        </div>
-        <div className="card flex items-center gap-4">
-          <div className="p-3 bg-purple-500/20 text-purple-400 rounded-lg">
-            <Wallet size={24} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-400">Account</p>
-            <p className="text-xl font-bold">{user ? 'Verified' : 'Guest'}</p>
-          </div>
-        </div>
-        <div className="card flex items-center gap-4">
-          <div className="p-3 bg-yellow-500/20 text-yellow-400 rounded-lg">
-            <Battery size={24} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-400">Stock</p>
-            <p className="text-xl font-bold">High</p>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-card/50 backdrop-blur border-primary/10 transition-all hover:border-primary/30">
+          <CardContent className="p-6 flex items-center gap-4">
+            <div className="p-3 bg-blue-500/10 text-blue-500 rounded-xl">
+              <TrendingUp className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">{t('rates')}</p>
+              <p className="text-2xl font-bold tracking-tight">৳{marketData?.rates?.solana || '...'}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card/50 backdrop-blur border-primary/10 transition-all hover:border-primary/30">
+          <CardContent className="p-6 flex items-center gap-4">
+            <div className="p-3 bg-green-500/10 text-green-500 rounded-xl">
+              <Zap className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Network</p>
+              <p className="text-2xl font-bold tracking-tight">Healthy</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card/50 backdrop-blur border-primary/10 transition-all hover:border-primary/30">
+          <CardContent className="p-6 flex items-center gap-4">
+            <div className="p-3 bg-purple-500/10 text-purple-500 rounded-xl">
+              <ShieldCheck className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Security</p>
+              <p className="text-2xl font-bold tracking-tight">{user ? 'Verified' : 'Guest'}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card/50 backdrop-blur border-primary/10 transition-all hover:border-primary/30">
+          <CardContent className="p-6 flex items-center gap-4">
+            <div className="p-3 bg-yellow-500/10 text-yellow-500 rounded-xl">
+              <Wallet className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Assets</p>
+              <p className="text-2xl font-bold tracking-tight">Multi-Chain</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Market Table */}
-      <section className="card overflow-hidden">
-        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-          <TrendingUp className="text-primary" /> {t('rates')}
-        </h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-gray-700 text-gray-400 text-sm">
-                <th className="pb-4 font-medium">Network</th>
-                <th className="pb-4 font-medium text-right">Rate (1 USDT/USDC)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-800">
-              {networks.map((net) => (
-                <tr key={net.id} className="hover:bg-white/5 transition-colors group">
-                  <td className="py-4 flex items-center gap-3">
-                    <span className="text-2xl">{net.icon}</span>
-                    <span className="font-medium group-hover:text-primary transition-colors">{net.name}</span>
-                  </td>
-                  <td className="py-4 text-right font-mono font-bold text-lg">
-                    ৳{marketData?.rates?.[net.id] || marketData?.rates?.solana || '...'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      {/* Main Content Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Market Table */}
+        <Card className="lg:col-span-2 overflow-hidden shadow-xl border-primary/10">
+          <CardHeader className="bg-muted/30 pb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" /> {t('rates')}
+                </CardTitle>
+                <CardDescription>Live BDT conversion rates for stablecoins</CardDescription>
+              </div>
+              <Badge variant="secondary" className="font-mono uppercase text-[10px]">Real-time</Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent border-muted/50">
+                  <TableHead className="w-[200px] pl-6 font-semibold uppercase text-[10px] tracking-wider">Network</TableHead>
+                  <TableHead className="font-semibold uppercase text-[10px] tracking-wider">Asset</TableHead>
+                  <TableHead className="text-right pr-6 font-semibold uppercase text-[10px] tracking-wider">Rate (1 USDT/USDC)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {networks.map((net) => (
+                  <TableRow key={net.id} className="group hover:bg-primary/5 transition-colors">
+                    <TableCell className="py-4 pl-6 flex items-center gap-3">
+                      <span className="text-2xl">{net.icon}</span>
+                      <span className="font-semibold">{net.name}</span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="font-mono text-[10px]">USDT/USDC</Badge>
+                    </TableCell>
+                    <TableCell className="py-4 text-right pr-6">
+                       <span className="font-mono text-lg font-bold text-primary group-hover:scale-105 transition-transform inline-block">
+                         ৳{marketData?.rates?.[net.id] || marketData?.rates?.solana || '...'}
+                       </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
-      {/* Quick Actions */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="card bg-primary text-secondary">
-          <h3 className="text-2xl font-bold mb-2">{t('buy')}</h3>
-          <p className="mb-6 opacity-80">Quickly purchase USDC or USDT using bKash at the best market rates.</p>
-          <a href="/buy" className="inline-block bg-secondary text-white font-bold py-3 px-8 rounded-xl hover:bg-black/80 transition-colors">
-            {t('buy')}
-          </a>
+        {/* Quick Actions */}
+        <div className="flex flex-col gap-6">
+          <Card className="bg-primary text-primary-foreground overflow-hidden border-none shadow-lg relative group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-500">
+              <ShoppingCart size={120} />
+            </div>
+            <CardHeader>
+              <CardTitle className="text-2xl">{t('buy')}</CardTitle>
+              <CardDescription className="text-primary-foreground/70">
+                Purchase USDC or USDT using bKash instantly.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild variant="secondary" className="w-full font-bold h-12 shadow-md">
+                <Link to="/buy" className="flex items-center gap-2">
+                  Start Order <ArrowRight size={18} />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-slate-900 border-primary/20 overflow-hidden shadow-lg relative group">
+             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-500">
+              <RefreshCw size={120} />
+            </div>
+            <CardHeader>
+              <CardTitle className="text-2xl text-white">{t('swap')}</CardTitle>
+              <CardDescription className="text-gray-400">
+                Bridge assets between 20+ chains with LI.FI.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild variant="outline" className="w-full font-bold h-12 border-primary/30 hover:bg-primary/10 text-primary">
+                <Link to="/swap" className="flex items-center gap-2">
+                  Launch Bridge <ArrowRight size={18} />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
-        <div className="card bg-accent border-primary/30">
-          <h3 className="text-2xl font-bold mb-2 text-primary">{t('swap')}</h3>
-          <p className="mb-6 text-gray-400">Bridge and Swap assets between 20+ chains using LI.FI.</p>
-          <a href="/swap" className="inline-block bg-primary text-secondary font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-colors">
-            {t('swap')}
-          </a>
-        </div>
-      </section>
+      </div>
     </div>
   );
 };

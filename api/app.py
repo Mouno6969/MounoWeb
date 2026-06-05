@@ -14,7 +14,10 @@ from swap_service import quote_lifi, summarize_quote
 
 app = Flask(__name__, static_folder=None)
 CORS(app)
-app.config['SECRET_KEY'] = os.getenv("WEB_SECRET_KEY", "mouno_web_secret_123")
+_SECRET = os.getenv("WEB_SECRET_KEY")
+if not _SECRET:
+    raise RuntimeError("WEB_SECRET_KEY must be set in the environment")
+app.config['SECRET_KEY'] = _SECRET
 
 def token_required(f):
     @wraps(f)
@@ -39,7 +42,7 @@ def register():
     data = request.get_json()
     if not data or not data.get('username') or not data.get('password'):
         return jsonify({'message': 'Username and password required'}), 400
-    
+
     hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
     if db.create_web_user(data['username'], hashed_password):
         return jsonify({'message': 'User created successfully'}), 201
@@ -51,23 +54,23 @@ def login():
     data = request.get_json()
     if not data or not data.get('username') or not data.get('password'):
         return jsonify({'message': 'Username and password required'}), 400
-    
+
     user = db.get_web_user(data['username'])
     if not user:
         return jsonify({'message': 'Invalid credentials'}), 401
-    
+
     if check_password_hash(user[2], data['password']):
         token = jwt.encode({
             'username': user[1],
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
         }, app.config['SECRET_KEY'], algorithm="HS256")
-        
+
         return jsonify({
             'token': token,
             'username': user[1],
             'telegram_id': user[3]
         })
-    
+
     return jsonify({'message': 'Invalid credentials'}), 401
 
 @app.route('/api/market', methods=['GET'])
@@ -77,7 +80,7 @@ def get_market():
     for net in networks:
         rate = db.get_network_rate(net) or config.RATE
         rates[net] = rate
-    
+
     return jsonify({
         'rates': rates,
         'bKash': config.BKASH_NUMBER,
@@ -107,7 +110,7 @@ def get_user_orders(current_user):
             "SELECT trx_id, order_id, amount_bdt, amount_usdc, network, wallet, status, created_at FROM transactions WHERE user_id=? ORDER BY created_at DESC",
             (str(user_id),)
         ).fetchall()
-        
+
         pending = con.execute(
             "SELECT trx_id, order_id, amount_bdt, amount_usdc, network, wallet, created_at FROM pending_orders WHERE user_id=? ORDER BY created_at DESC",
             (str(user_id),)
@@ -121,19 +124,23 @@ def get_user_orders(current_user):
 @app.route('/api/buy', methods=['POST'])
 @token_required
 def buy_crypto(current_user):
-    data = request.get_json()
     user_id = current_user[3] if current_user[3] else f"web_{current_user[0]}"
-    
-    amount_bdt = float(data.get('amount_bdt'))
-    network = data.get('network')
-    wallet = data.get('wallet')
-    trx_id = data.get('trx_id').strip().upper()
-    
+
+    data = request.get_json() or {}
+    try:
+        amount_bdt = float(data.get('amount_bdt'))
+    except (TypeError, ValueError):
+        return jsonify({'message': 'Valid amount_bdt required'}), 400
+    trx_id = (data.get('trx_id') or '').strip().upper()
+    network = data.get('network'); wallet = data.get('wallet')
+    if not (trx_id and network and wallet):
+        return jsonify({'message': 'network, wallet and trx_id required'}), 400
+
     rate = db.get_network_rate(network) or config.RATE
     amount_usdc = round(amount_bdt / rate, 2)
-    
+
     order_id = db.save_pending_order(trx_id, user_id, amount_bdt, amount_usdc, wallet, network)
-    
+
     return jsonify({
         'status': 'pending',
         'order_id': order_id,
@@ -148,7 +155,7 @@ def swap_quote():
     toToken = request.args.get('toToken')
     amount = request.args.get('amount')
     fromAddress = request.args.get('fromAddress')
-    
+
     try:
         intent = {
             "from_chain_id": fromChain,
